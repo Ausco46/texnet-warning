@@ -1,88 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Service Expiry Notice</title>
+  <meta charset="UTF-8" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      color: #333;
-      padding: 40px;
+      background: #f4f4f4;
       text-align: center;
+      padding: 50px;
     }
-    .container {
-      background: #fff;
-      padding: 30px;
+    .card {
+      background: white;
       max-width: 600px;
       margin: auto;
+      padding: 40px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h1 {
-      color: #cc0000;
-    }
-    .active {
-      color: #007700;
-    }
     .footer {
-      margin-top: 40px;
-      font-size: 0.9em;
-      color: #777;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="messageBox">
-    <h1>Checking your subscription...</h1>
-  </div>
-
-  <div class="footer">
-    TEXNET HOME FIBER &mdash; Reliable. Fast. Affordable.
+  <div class="card">
+    <h2>📢 Dear Client</h2>
+    <p>Your internet service is currently <strong>active</strong> and will expire on:</p>
+    <p style="font-size: 1.3em;"><strong id="expDate">[expiry]</strong></p>
+    <p>To avoid any interruption, kindly renew your subscription in advance.</p>
+    <p><strong>PAYBILL:</strong> <code>222111</code> <br><strong>ACCOUNT NUMBER:</strong> <code>162238</code></p>
+    <p>For assistance, contact us on:<br>📞 0717893086 / 0703127286</p>
+    <div class="footer">
+      — TEXNET HOME FIBER: Fast, Affordable, Reliable —
+    </div>
   </div>
 
   <script>
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-
-    const expRaw = getQueryParam("exp");
-    const name = getQueryParam("name") || "Dear Client";
-
-    const messageBox = document.getElementById("messageBox");
-
-    if (!expRaw) {
-      messageBox.innerHTML = `<h1>Error</h1><p>Missing expiry date.</p>`;
+    const params = new URLSearchParams(window.location.search);
+    const expRaw = params.get("exp");
+    if (expRaw) {
+      const exp = new Date(expRaw);
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+      document.getElementById("expDate").textContent = exp.toLocaleString('en-US', options);
     } else {
-      const expTime = new Date(expRaw);
-      const now = new Date();
-
-      const expOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
-      const expFormatted = expTime.toLocaleString('en-US', expOptions);
-
-      if (now < expTime) {
-        // Still active
-        messageBox.innerHTML = `
-          <h1 class="active">Welcome</h1>
-          <p><strong>${name}</strong>, your internet service is currently active and is scheduled to expire on <strong>${expFormatted}</strong>.</p>
-          <p>To ensure uninterrupted connectivity, kindly renew your subscription before the expiry time.</p>
-          <p>Thank you for choosing <strong>TEXNET HOME FIBER</strong>.</p>
-        `;
-      } else {
-        // Expired
-        messageBox.innerHTML = `
-          <h1>Service Expired</h1>
-          <p><strong>${name}</strong>, your internet subscription expired on <strong>${expFormatted}</strong>.</p>
-          <p>To restore access, please renew using the following details:</p>
-          <ul style="list-style:none; padding-left:0;">
-            <li><strong>Paybill:</strong> 222111</li>
-            <li><strong>Account Number:</strong> 162238</li>
-          </ul>
-          <p>Need help? Call us at <strong>0717893086 / 0703127286</strong>.</p>
-        `;
-      }
+      document.getElementById("expDate").textContent = "(Date unavailable)";
     }
   </script>
 </body>
