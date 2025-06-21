@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Internet Expiry Warning</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      color: #000;
+      padding: 30px;
+      text-align: center;
+    }
+    .warning {
+      color: red;
+      font-size: 48px;
+    }
+    .content {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    .highlight {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="warning">⚠️</div>
+  <div class="content" id="message">
+    Loading...
+  </div>
+
+  <script>
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString(undefined, options);
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name") || "Customer";
+    const expRaw = params.get("exp");
+
+    if (!expRaw) {
+      document.getElementById("message").innerHTML = "Missing expiry date.";
+    } else {
+      const expiry = new Date(expRaw);
+      const now = new Date();
+      const diffMs = expiry - now;
+      const hoursLeft = diffMs / (1000 * 60 * 60);
+
+      if (hoursLeft <= 24 && hoursLeft > 0) {
+        document.getElementById("message").innerHTML = `
+          <p><span class="highlight">${name}</span>,</p>
+          <p>Your internet will expire on <span class="highlight">${formatDate(expiry)}</span> at <span class="highlight">${formatTime(expiry)}</span>.</p>
+          <p>Please renew by making a payment.</p>
+          <p><strong>PAYBILL:</strong> 222111<br><strong>ACCOUNT NUMBER:</strong> 162238</p>
+          <p>For support, call <strong>0717893086</strong> or <strong>0703127286</strong>.</p>
+        `;
+      } else if (hoursLeft <= 0) {
+        document.getElementById("message").innerHTML = `
+          <p><span class="highlight">${name}</span>,</p>
+          <p>Your internet <span class="highlight">has expired</span> on <span class="highlight">${formatDate(expiry)}</span> at <span class="highlight">${formatTime(expiry)}</span>.</p>
+          <p>Please renew by making a payment.</p>
+          <p><strong>PAYBILL:</strong> 222111<br><strong>ACCOUNT NUMBER:</strong> 162238</p>
+          <p>For support, call <strong>0717893086</strong> or <strong>0703127286</strong>.</p>
+        `;
+      } else {
+        document.getElementById("message").innerHTML = `
+          <p><span class="highlight">${name}</span>,</p>
+          <p>Your internet is active and will expire on <span class="highlight">${formatDate(expiry)}</span> at <span class="highlight">${formatTime(expiry)}</span>.</p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
