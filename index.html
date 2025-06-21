@@ -36,7 +36,7 @@
   <div class="container">
     <h2>Dear Client,</h2>
     <p>This is a friendly reminder that your internet service is <strong>almost expired</strong>.</p>
-    <p>It will expire on <span class="highlight">June 25, 2025 at 08:16 PM</span>.</p>
+    <p>It will expire on <span class="highlight" id="expiry">loading...</span>.</p>
     <p><strong>Please renew on time</strong> to continue enjoying uninterrupted service.</p>
     <p><strong>Payment Details:</strong><br>
        PAYBILL: <strong>222111</strong><br>
@@ -47,5 +47,29 @@
   <footer>
     TEXNET HOME FIBER – Fast, Affordable, Reliable
   </footer>
+
+  <script>
+    // Parse comment from URL
+    const query = new URLSearchParams(window.location.search);
+    const comment = query.get('comment') || '';
+
+    // Extract expiry from format like: name=Obadiah Mburu;exp=2025/06/25 20:16;phone=0737250758
+    const match = comment.match(/exp=([\d\/]+ [\d:]+)/);
+    if (match) {
+      const raw = match[1]; // "2025/06/25 20:16"
+      const date = new Date(raw.replace(/\//g, '-').replace(' ', 'T'));
+
+      if (!isNaN(date)) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                          hour: 'numeric', minute: '2-digit', hour12: true };
+        const formatted = date.toLocaleString('en-US', options);
+        document.getElementById('expiry').textContent = formatted;
+      } else {
+        document.getElementById('expiry').textContent = 'Invalid date';
+      }
+    } else {
+      document.getElementById('expiry').textContent = 'Missing expiry info';
+    }
+  </script>
 </body>
 </html>
